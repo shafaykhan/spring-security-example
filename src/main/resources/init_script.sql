@@ -16,5 +16,5 @@ create table user
 );
 
 insert into user(name, password, role, status)
-values ('user', '$2y$12$jgkzysfZMj0jY5VlWiZe.OnHgXEmIe4m3OxdT4ugJHeCyXy8Qn/Oa', 'ROLE_USER', 'ACTIVE'), -- password - user
-       ('admin', '$2y$12$pfjHhp4Cx6Jv7uZQHZud/.TJCP9rT8Oi5Yb7WNnAcJqtwEshlLz1W', 'ROLE_ADMIN', 'ACTIVE'); -- password - admin
+values ('user', 'user', 'ROLE_USER', 'ACTIVE'), -- password - user
+       ('admin', 'admin', 'ROLE_ADMIN', 'ACTIVE'); -- password - admin
