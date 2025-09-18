@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/employees")
+@RequestMapping("/employees")
 public class EmployeeController {
 
   private List<Employee> employees = Arrays.asList(
