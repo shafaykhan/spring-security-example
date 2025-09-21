@@ -14,11 +14,11 @@ import java.util.List;
 public class EmployeeController {
 
   private List<Employee> employees = Arrays.asList(
-          new Employee(1L, "Shafay", "Aurangabad", 1L),
-          new Employee(2L, "Juned", "Pune", 1L),
-          new Employee(3L, "Sohel", "Beed", 5L),
-          new Employee(4L, "Azhar", "Aurangabad", 3L),
-          new Employee(5L, "Adil", "Aurangabad", 2L));
+          new Employee(1L, "User1", "City1", 1L),
+          new Employee(2L, "User2", "City2", 1L),
+          new Employee(3L, "User3", "City3", 5L),
+          new Employee(4L, "User4", "City1", 3L),
+          new Employee(5L, "User5", "City1", 2L));
 
   @GetMapping
   public ResponseEntity<List<Employee>> findAll() {
