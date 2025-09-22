@@ -11,12 +11,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -36,7 +33,7 @@ public class SecurityConfiguration {
         .authorizeHttpRequests(requests -> requests
             .requestMatchers("/", "index", "/css/*", "/js/*", "/auth/**").permitAll() // disable security urls
             .requestMatchers("/departments/**").hasAnyRole("ADMIN")
-            .requestMatchers("/employees/**").hasAnyRole("ADMIN", "EMPLOYEE")
+            .requestMatchers("/employees/").hasAnyRole("ADMIN", "EMPLOYEE")
             .anyRequest().authenticated())
         .sessionManagement(session ->
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -47,23 +44,6 @@ public class SecurityConfiguration {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
-  }
-
-  @Bean
-  public UserDetailsService userDetailsService() {
-    UserDetails admin = User.builder()
-        .username("admin")
-        .password(passwordEncoder().encode("Pass@123"))
-        .roles("ADMIN")
-        .build();
-
-    UserDetails user = User.builder()
-        .username("user")
-        .password(passwordEncoder().encode("Pass@123"))
-        .roles("EMPLOYEE")
-        .build();
-
-    return new InMemoryUserDetailsManager(admin, user);
   }
 
   @Bean
