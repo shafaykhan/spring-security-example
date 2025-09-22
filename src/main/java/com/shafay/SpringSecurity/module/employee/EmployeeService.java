@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService implements UserDetailsService {
@@ -39,6 +40,9 @@ public class EmployeeService implements UserDetailsService {
 
   @Transactional
   public Employee createEmployeeIfNotExists(Jwt jwt) {
+    Optional<Employee> optionalEmployee = repository.findByEmail(jwt.getClaim("email"));
+    if (optionalEmployee.isPresent()) return optionalEmployee.get();
+
     Employee employee = Employee.builder()
         .name(jwt.getClaim("name"))
         .username(jwt.getClaim("name").toString().split(" ")[0])
