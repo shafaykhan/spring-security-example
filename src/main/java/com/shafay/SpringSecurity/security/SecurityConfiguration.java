@@ -22,9 +22,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
   private final JwtAuthFilter jwtAuthFilter;
+  private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
-  public SecurityConfiguration(JwtAuthFilter jwtAuthFilter) {
+  public SecurityConfiguration(JwtAuthFilter jwtAuthFilter,
+                               OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) {
     this.jwtAuthFilter = jwtAuthFilter;
+    this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
   }
 
   @Bean
@@ -37,6 +40,9 @@ public class SecurityConfiguration {
             .anyRequest().authenticated())
         .sessionManagement(session ->
             session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .oauth2Login(oauth2 -> oauth2
+            .successHandler(oAuth2AuthenticationSuccessHandler)
+        )
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }

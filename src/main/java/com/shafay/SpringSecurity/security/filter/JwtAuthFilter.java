@@ -1,7 +1,9 @@
 package com.shafay.SpringSecurity.security.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shafay.SpringSecurity.common.util.JwtUtil;
 import com.shafay.SpringSecurity.module.employee.EmployeeService;
+import com.shafay.SpringSecurity.security.auth.AuthResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,18 +32,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     final String header = request.getHeader("Authorization");
 
-    if (header != null && header.startsWith("Bearer ")) {
-      String token = header.substring(7);
-      String username = jwtUtil.extractUsername(token);
+    if (header == null || !header.startsWith("Bearer ")) {
+      filterChain.doFilter(request, response);
+      return;
+    }
 
-      if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-        var employeeDetails = employeeService.findByUsername(username);
+    String token = header.substring(7);
+    String username = jwtUtil.extractUsername(token);
 
-        if (jwtUtil.validateToken(token, employeeDetails.getUsername())) {
-          var authToken = new PreAuthenticatedAuthenticationToken(employeeDetails, null, Collections.emptyList());
-          SecurityContextHolder.getContext().setAuthentication(authToken);
-        }
+    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+      var employeeDetails = employeeService.findByUsername(username);
+
+      if (!jwtUtil.validateToken(token, employeeDetails.getUsername())) {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        AuthResponse authResponse = new AuthResponse(null, "Invalid or expired token");
+        new ObjectMapper().writeValue(response.getWriter(), authResponse);
+        return;
       }
+
+      var authToken = new PreAuthenticatedAuthenticationToken(employeeDetails, null, Collections.emptyList());
+      SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 
     filterChain.doFilter(request, response);
