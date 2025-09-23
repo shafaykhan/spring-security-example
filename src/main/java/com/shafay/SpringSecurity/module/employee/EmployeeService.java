@@ -6,6 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,14 +41,14 @@ public class EmployeeService implements UserDetailsService {
   }
 
   @Transactional
-  public Employee createEmployeeIfNotExists(Jwt jwt) {
-    Optional<Employee> optionalEmployee = repository.findByEmail(jwt.getClaim("email"));
+  public Employee createEmployeeIfNotExists(OidcUser user) {
+    Optional<Employee> optionalEmployee = repository.findByEmail(user.getEmail());
     if (optionalEmployee.isPresent()) return optionalEmployee.get();
 
     Employee employee = Employee.builder()
-        .name(jwt.getClaim("name"))
-        .username(jwt.getClaim("name").toString().split(" ")[0])
-        .email(jwt.getClaim("email"))
+        .name(user.getFullName())
+        .username(user.getFullName().split(" ")[0])
+        .email(user.getEmail())
         .password(passwordEncoder.encode("Pass@123"))
         .build();
     return repository.save(employee);
