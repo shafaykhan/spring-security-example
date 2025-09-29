@@ -34,11 +34,11 @@ public class JwtUtil {
   }
 
   // Validate token
-  public boolean validateToken(String token, String username) {
-    return (username.equals(extractUsername(token)) && !isTokenExpired(token));
-  }
+  //public boolean validateToken(String token, String username) {
+  //  return (username.equals(extractUsername(token)) && !isTokenExpired(token));
+  //}
 
-  private boolean isTokenExpired(String token) {
+  public boolean isTokenExpired(String token) {
     return parseClaims(token).getExpiration().before(new Date());
   }
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shafay.SpringSecurity.common.util.JwtUtil;
 import com.shafay.SpringSecurity.module.employee.Employee;
 import com.shafay.SpringSecurity.module.employee.EmployeeService;
-import com.shafay.SpringSecurity.security.auth.AuthResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,12 +29,11 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
     OidcUser oidcUser = (OidcUser) authentication.getPrincipal();
     Employee employee = employeeService.createEmployeeIfNotExists(oidcUser);
+    String token = jwtUtil.generateToken(employee.getUsername());
 
-    String jwtToken = jwtUtil.generateToken(employee.getUsername());
-
+    String jsonResponse = new ObjectMapper().writeValueAsString(new AuthenticationWithToken(employee, token));
     response.setStatus(HttpServletResponse.SC_OK);
     response.setContentType("application/json");
-    AuthResponse authResponse = new AuthResponse(jwtToken, "Login successful via Google");
-    new ObjectMapper().writeValue(response.getWriter(), authResponse);
+    response.getWriter().print(jsonResponse);
   }
 }

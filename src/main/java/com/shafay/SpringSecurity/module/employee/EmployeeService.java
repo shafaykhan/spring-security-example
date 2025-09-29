@@ -1,14 +1,8 @@
 package com.shafay.SpringSecurity.module.employee;
 
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class EmployeeService implements UserDetailsService {
+public class EmployeeService {
 
   private final EmployeeRepository repository;
   private final PasswordEncoder passwordEncoder;
@@ -52,15 +46,5 @@ public class EmployeeService implements UserDetailsService {
         .password(passwordEncoder.encode("Pass@123"))
         .build();
     return repository.save(employee);
-  }
-
-  @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    Employee employee = findByUsername(username);
-    return User.builder()
-        .username(employee.getUsername())
-        .password(employee.getPassword())
-        .authorities("EMPLOYEE")
-        .build();
   }
 }
